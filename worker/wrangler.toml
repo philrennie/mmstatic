@@ -9,7 +9,7 @@ ALLOWED_ORIGINS = "https://www.markminors.co.uk,https://markminors.co.uk,https:/
 SITE_URL = "https://www.markminors.co.uk"
 SMTP_HOST = "smtp.migadu.com"
 SMTP_PORT = "465"
-FROM_EMAIL = "website@markminors.co.uk"
+FROM_EMAIL = "noreply@codetrial.net"
 FROM_NAME = "Mark Minors website"
 
 # Secrets – set with `npx wrangler secret put NAME`, never commit them:

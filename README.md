@@ -71,7 +71,7 @@ Cloudflare's part fits in the free tier. Email goes out through the existing Mig
 
 **b. Migadu**
 - The Worker logs in to `smtp.migadu.com:465` (implicit TLS) as one mailbox. Cloudflare Workers can't use port 25; ports 465 and 587 both work.
-- The address the message is sent from (`FROM_EMAIL` in `worker/wrangler.toml`, currently `website@markminors.co.uk`) must be either that mailbox or an *identity* of it in Migadu. Otherwise Migadu rejects it.
+- The address the message is sent from (`FROM_EMAIL` in `worker/wrangler.toml`, currently `noreply@codetrial.net`) must be either that mailbox or an *identity* of it in Migadu. Otherwise Migadu rejects it.
 - The visitor's address only ever goes in `Reply-To`, never `From`, so SPF, DKIM and DMARC still pass.
 
 **c. Deploy the Worker** (dashboard, no CLI needed)
