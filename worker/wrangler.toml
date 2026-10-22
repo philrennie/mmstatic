@@ -6,7 +6,7 @@ workers_dev = true
 
 [vars]
 ALLOWED_ORIGINS = "https://www.markminors.co.uk,https://markminors.co.uk,https://philrennie.github.io"
-SITE_URL = "https://www.markminors.co.uk"
+SITE_URL = "https://markminors.co.uk"
 SMTP_HOST = "smtp.migadu.com"
 SMTP_PORT = "465"
 FROM_EMAIL = "noreply@codetrial.net"

@@ -18,7 +18,6 @@
   --gutter: 15px;
   --nav-h: 80px;
   --font: "neuzeit-grotesk", "Jost", "Futura", "Century Gothic", "Helvetica Neue", Arial, sans-serif;
-  color-scheme: dark;
 }
 
 *, *::before, *::after { box-sizing: border-box; }
