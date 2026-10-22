@@ -91,6 +91,7 @@ export default function (eleventyConfig) {
 
   eleventyConfig.addGlobalData("isProduction", isProduction);
   eleventyConfig.addGlobalData("buildYear", new Date().getFullYear());
+  eleventyConfig.addGlobalData("buildId", Date.now().toString(36)); // cache-buster for CSS/JS
 
   return {
     dir: { input: "src", output: "_site", includes: "_includes", data: "_data" },
