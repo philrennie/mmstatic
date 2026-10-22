@@ -1,0 +1,12 @@
+---
+pagination:
+  data: collections.reviews
+  size: 10
+  alias: posts
+permalink: "/reviews/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
+eleventyComputed:
+  title: "{{ site.sections.reviews.title }}"
+listSection: reviews
+---
+{% extends "base.njk" %}
+{% block main %}{% include "partials/listing.njk" %}{% endblock %}

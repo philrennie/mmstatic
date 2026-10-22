@@ -1,0 +1,32 @@
+<div class="wrap listing">
+  <header class="listing-header">
+    <h1 class="section-heading">{{ title }}</h1>
+    {%- if pagination.pageNumber == 0 and site.sections[listSection].intro %}
+    <div class="prose listing-intro">{{ site.sections[listSection].intro | safe }}</div>
+    {%- endif %}
+  </header>
+  {%- for post in posts %}
+  <article class="list-item">
+    <a class="list-media" href="{{ post.url }}" tabindex="-1" aria-hidden="true">
+      {%- if post.data.image %}<img src="{{ post.data.image }}" alt="" sizes="(min-width: 50rem) 45vw, 100vw">{% else %}<div class="card-placeholder"></div>{% endif %}
+    </a>
+    <div class="list-body">
+      <h2><a href="{{ post.url }}">{{ post.data.title }}</a></h2>
+      <p class="meta"><time datetime="{{ post.date | isoDate }}">{{ post.date | readableDate }}</time>
+        {%- if post.data.score %} · <span aria-label="{{ post.data.score }} out of 5">{{ post.data.score | stars }}</span>{% endif %}
+        {%- if post.data.draft %} <span class="draft-badge">Draft</span>{% endif %}</p>
+      <p>{{ post.content | excerpt(255) }}</p>
+      <p><a class="read-more" href="{{ post.url }}">Read more<span class="visually-hidden"> about {{ post.data.title }}</span></a></p>
+    </div>
+  </article>
+  {%- else %}
+  <p>Nothing here yet.</p>
+  {%- endfor %}
+  {%- if pagination.pages.length > 1 %}
+  <nav class="pager" aria-label="Pages">
+    {%- if pagination.href.previous %}<a href="{{ pagination.href.previous }}">&larr; Newer</a>{% else %}<span></span>{% endif %}
+    <span>Page {{ pagination.pageNumber + 1 }} of {{ pagination.pages.length }}</span>
+    {%- if pagination.href.next %}<a href="{{ pagination.href.next }}">Older &rarr;</a>{% else %}<span></span>{% endif %}
+  </nav>
+  {%- endif %}
+</div>

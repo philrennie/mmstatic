@@ -1,0 +1,15 @@
+<header class="site-header">
+  <a class="brand" href="/">{{ site.title | upper }}</a>
+  <nav class="site-nav" aria-label="Main">
+    <ul>
+      <li><a href="/" {% if page.url == "/" %}aria-current="page"{% endif %}>Home</a></li>
+      {%- if site.sections.news.showInNav and collections.news.length %}
+      <li><a href="/news/" {% if section == "news" or page.url.startsWith("/news/") %}aria-current="page"{% endif %}>{{ site.sections.news.title }}</a></li>
+      {%- endif %}
+      {%- if site.sections.reviews.showInNav and collections.reviews.length %}
+      <li><a href="/reviews/" {% if section == "reviews" or page.url.startsWith("/reviews/") %}aria-current="page"{% endif %}>{{ site.sections.reviews.title }}</a></li>
+      {%- endif %}
+      <li><a href="/#contact">Contact</a></li>
+    </ul>
+  </nav>
+</header>

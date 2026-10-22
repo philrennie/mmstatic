@@ -1,0 +1,12 @@
+---
+pagination:
+  data: collections.news
+  size: 10
+  alias: posts
+permalink: "/news/{% if pagination.pageNumber > 0 %}page/{{ pagination.pageNumber + 1 }}/{% endif %}"
+eleventyComputed:
+  title: "{{ site.sections.news.title }}"
+listSection: news
+---
+{% extends "base.njk" %}
+{% block main %}{% include "partials/listing.njk" %}{% endblock %}

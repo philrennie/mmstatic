@@ -1,0 +1,297 @@
+# Pages CMS configuration – https://pagescms.org/docs/configuration/
+# Log in at https://app.pagescms.org with GitHub and open philrennie/mmstatic.
+# Every save is a commit to main, which triggers the GitHub Pages build (about a minute).
+
+media:
+  input: src/media/uploads
+  output: /media/uploads
+  categories:
+  - image
+  rename: safe
+components:
+  postTitle:
+    label: Title
+    type: string
+    required: true
+  postDate:
+    label: Date
+    type: date
+    required: true
+    options:
+      format: yyyy-MM-dd
+  postDraft:
+    label: Draft (hidden from the live site)
+    type: boolean
+    default: false
+  postImage:
+    label: Featured image
+    type: image
+  postImagePosition:
+    label: Image position
+    type: select
+    default: left
+    options:
+      values:
+      - value: left
+        label: Left of text
+      - value: right
+        label: Right of text
+      - value: top
+        label: Full width above text
+  postVideo:
+    label: Video link
+    type: string
+    description: Paste a YouTube or Vimeo page link (e.g. https://vimeo.com/123456) and it will be embedded below the text.
+  postDescription:
+    label: Search engine description
+    type: text
+    description: Optional one-sentence summary for Google and social shares. Leave blank to use the start of the text.
+  postBody:
+    label: Text
+    type: rich-text
+    options:
+      format: html
+content:
+- name: news
+  label: News
+  type: collection
+  path: src/content/news
+  format: yaml-frontmatter
+  exclude:
+  - news.11tydata.js
+  filename:
+    template: '{fields.title}.md'
+    field: create
+  view:
+    fields:
+    - title
+    - date
+    - draft
+    primary: title
+    sort:
+    - date
+    - title
+    default:
+      sort: date
+      order: desc
+    search:
+    - title
+  fields:
+  - name: title
+    component: postTitle
+  - name: date
+    component: postDate
+  - name: pinned
+    label: Pin to top of News and homepage
+    type: boolean
+    default: false
+  - name: draft
+    component: postDraft
+  - name: image
+    component: postImage
+  - name: imagePosition
+    component: postImagePosition
+  - name: video
+    component: postVideo
+  - name: description
+    component: postDescription
+  - name: body
+    component: postBody
+- name: reviews
+  label: Film reviews
+  type: collection
+  path: src/content/reviews
+  format: yaml-frontmatter
+  exclude:
+  - reviews.11tydata.js
+  filename:
+    template: '{fields.title}.md'
+    field: create
+  view:
+    fields:
+    - title
+    - score
+    - date
+    - draft
+    primary: title
+    sort:
+    - date
+    - title
+    default:
+      sort: date
+      order: desc
+    search:
+    - title
+  fields:
+  - name: title
+    component: postTitle
+  - name: date
+    component: postDate
+  - name: score
+    label: Score (out of 5)
+    type: number
+    options:
+      min: 1
+      max: 5
+  - name: draft
+    component: postDraft
+  - name: image
+    component: postImage
+  - name: imagePosition
+    component: postImagePosition
+  - name: video
+    component: postVideo
+    label: Trailer link
+  - name: description
+    component: postDescription
+  - name: body
+    component: postBody
+- name: site
+  label: Homepage & site settings
+  type: file
+  path: src/_data/site.json
+  format: json
+  fields:
+  - name: title
+    label: Site name
+    type: string
+    required: true
+  - name: tagline
+    label: Tagline
+    type: string
+  - name: url
+    label: Site address
+    type: string
+    hidden: true
+  - name: description
+    label: Default search engine description
+    type: text
+  - name: hero
+    label: Hero (top of homepage)
+    type: object
+    fields:
+    - name: heading
+      label: Heading
+      type: text
+      description: A new line becomes a line break.
+    - name: image
+      label: Background image
+      type: image
+    - name: colour
+      label: Heading colour
+      type: string
+      pattern: &id001
+        regex: ^#([0-9a-fA-F]{3}){1,2}$
+        message: 'Use a hex colour like #000000'
+  - name: showreel
+    label: Showreel
+    type: object
+    fields:
+    - name: heading
+      label: Heading
+      type: string
+    - name: video
+      label: YouTube or Vimeo link
+      type: string
+    - name: title
+      label: Video title (for screen readers)
+      type: string
+    - name: background
+      label: Background colour
+      type: string
+      pattern: *id001
+    - name: colour
+      label: Text colour
+      type: string
+      pattern: *id001
+  - name: bio
+    label: Bio
+    type: object
+    fields:
+    - name: heading
+      label: Heading
+      type: string
+    - name: image
+      label: Background image
+      type: image
+    - name: text
+      label: Text
+      type: rich-text
+      options:
+        format: html
+  - name: contact
+    label: Contact section
+    type: object
+    fields:
+    - name: heading
+      label: Heading
+      type: string
+    - name: text
+      label: Text beside the form
+      type: rich-text
+      options:
+        format: html
+    - name: background
+      label: Background colour
+      type: string
+      pattern: *id001
+    - name: colour
+      label: Text colour
+      type: string
+      pattern: *id001
+  - name: social
+    label: Social links (leave blank to hide)
+    type: object
+    fields:
+    - name: linkedin
+      label: LinkedIn
+      type: string
+    - name: instagram
+      label: Instagram
+      type: string
+    - name: facebook
+      label: Facebook
+      type: string
+    - name: x
+      label: X / Twitter
+      type: string
+    - name: youtube
+      label: YouTube
+      type: string
+    - name: vimeo
+      label: Vimeo
+      type: string
+  - name: sections
+    label: Sections
+    type: object
+    fields:
+    - name: news
+      label: News
+      type: object
+      fields:
+      - name: title
+        label: Title
+        type: string
+      - name: intro
+        label: Intro text
+        type: rich-text
+        options:
+          format: html
+      - name: showInNav
+        label: Show in menu
+        type: boolean
+    - name: reviews
+      label: Film reviews
+      type: object
+      fields:
+      - name: title
+        label: Title
+        type: string
+      - name: intro
+        label: Intro text
+        type: rich-text
+        options:
+          format: html
+      - name: showInNav
+        label: Show in menu
+        type: boolean

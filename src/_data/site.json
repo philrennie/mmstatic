@@ -1,0 +1,49 @@
+{
+  "title": "Mark Minors",
+  "tagline": "Director & Vision Mixer",
+  "url": "https://www.markminors.co.uk",
+  "description": "Mark Minors – single- and multi-camera director and live vision mixer, based in the south of England.",
+  "hero": {
+    "heading": "Director &\nVision Mixer",
+    "image": "/media/uploads/hot.png",
+    "colour": "#fdfcff"
+  },
+  "showreel": {
+    "heading": "Showreel",
+    "video": "https://vimeo.com/1031614846",
+    "title": "Mark Minors – Live Vision Mix Reel",
+    "background": "#000000",
+    "colour": "#ffffff"
+  },
+  "bio": {
+    "heading": "Bio",
+    "image": "/media/uploads/marky_bio.jpg",
+    "text": "<p>I'm a versatile and highly skilled single- and multi-camera director and vision mixer, with over 3,000 credits on ITV, Sky and Freeview across a wide spectrum of genres and formats. My work has aired in more than 100 countries, connecting with diverse audiences worldwide.</p>\n<p>With a passion for creating visually engaging stories, I'm drawn to projects that explore themes of mental health &amp; social justice, and live music, as well as those that celebrate diverse voices and cultures. Whether for broadcast TV, YouTube, or other platforms, I specialize in translating compelling narratives into visuals that inspire and resonate with audiences.</p>\n<p>Fluent in current TV and YouTube production standards, I combine technical expertise with creative flair to meet the evolving demands of modern media. In addition to directing and vision mixing, my experience in set and lighting design allows for seamless collaboration with other departments to bring creative visions to life. I&rsquo;m also committed to sustainability, ensuring every project is planned with environmental awareness and a minimal carbon footprint.</p>\n<p>Based in the south of England, I&rsquo;m available to work across the UK and internationally, delivering innovative and impactful productions that inspire and connect.</p>"
+  },
+  "contact": {
+    "heading": "Contact",
+    "text": "<p>Whatever it is you want to make, like Frankenstein I'm here to bring your ideas to life.</p>\n<p><a href=\"mailto:mark@markminors.co.uk\">mark@markminors.co.uk</a><br /> Tel: <a href=\"tel:+447782325463\">+44 (0)7782 325463</a></p>",
+    "background": "#000000",
+    "colour": "#ffffff"
+  },
+  "social": {
+    "linkedin": "https://www.linkedin.com/in/mark-minors-76b41a86/",
+    "instagram": "https://www.instagram.com/minorsmark",
+    "facebook": "",
+    "x": "",
+    "youtube": "",
+    "vimeo": ""
+  },
+  "sections": {
+    "news": {
+      "title": "News",
+      "intro": "",
+      "showInNav": true
+    },
+    "reviews": {
+      "title": "Reviews",
+      "intro": "<p>Here's my views on the latest releases.&nbsp;Feel free to agree or disagree via social media or the contact form on the home page!</p>\n<p>Note I may stray into tiny&nbsp;spoilers at times, but I try to keep the big 'uns safely under wraps. I'll always give a [<em>spoiler</em>] heads-up before revealing any major plot points.</p>",
+      "showInNav": false
+    }
+  }
+}

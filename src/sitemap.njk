@@ -1,0 +1,18 @@
+---
+title: Sitemap
+permalink: /sitemap/
+---
+{% extends "base.njk" %}
+{% block main %}
+<div class="wrap prose sitemap">
+  <h1 class="section-heading">Sitemap</h1>
+  <ul>
+    <li><a href="/">Home</a></li>
+    {%- for key in ["news", "reviews"] %}{% if collections[key].length %}
+    <li><a href="/{{ key }}/">{{ site.sections[key].title }}</a>
+      <ul>{% for post in collections[key] %}<li><a href="{{ post.url }}">{{ post.data.title }}</a></li>{% endfor %}</ul>
+    </li>
+    {%- endif %}{% endfor %}
+  </ul>
+</div>
+{% endblock %}

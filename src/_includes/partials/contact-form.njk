@@ -1,0 +1,30 @@
+<form class="contact-form" id="contact-form" method="post" action="{{ contact.endpoint }}"
+      data-sitekey="{{ contact.turnstileSiteKey }}" novalidate>
+  <div class="field">
+    <label for="cf-name">Name</label>
+    <input id="cf-name" name="name" type="text" autocomplete="name" required maxlength="100">
+  </div>
+  <div class="field">
+    <label for="cf-email">Email</label>
+    <input id="cf-email" name="email" type="email" autocomplete="email" required maxlength="200">
+  </div>
+  <div class="field">
+    <label for="cf-subject">Subject</label>
+    <input id="cf-subject" name="subject" type="text" maxlength="150">
+  </div>
+  <div class="field">
+    <label for="cf-message">Message</label>
+    <textarea id="cf-message" name="message" rows="8" required minlength="10" maxlength="5000"></textarea>
+  </div>
+  {#- Honeypot: hidden from people, tempting to bots. Must stay empty. #}
+  <div class="hp" aria-hidden="true">
+    <label for="cf-website">Leave this empty</label>
+    <input id="cf-website" name="website" type="text" tabindex="-1" autocomplete="off">
+  </div>
+  <input type="hidden" name="started" value="">
+  <div class="cf-turnstile" id="cf-turnstile"></div>
+  <div class="form-actions">
+    <button type="submit">Send</button>
+    <p class="form-status" role="status" aria-live="polite"></p>
+  </div>
+</form>

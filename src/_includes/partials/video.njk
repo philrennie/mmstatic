@@ -1,0 +1,11 @@
+{#- expects `videoUrl` and optional `videoTitle` -#}
+{%- set src = videoUrl | embedUrl %}
+{%- if src %}
+<div class="video">
+  <iframe src="{{ src }}" title="{{ videoTitle or 'Video' }}" loading="lazy"
+    allow="autoplay; fullscreen; picture-in-picture; encrypted-media" allowfullscreen
+    referrerpolicy="strict-origin-when-cross-origin"></iframe>
+</div>
+{%- elif videoUrl %}
+<p><a href="{{ videoUrl }}" target="_blank" rel="noopener">Watch the video</a></p>
+{%- endif %}

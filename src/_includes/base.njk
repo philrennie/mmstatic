@@ -1,0 +1,35 @@
+{%- set pageTitle = (title ~ " · " ~ site.title) if title else (site.title ~ " · " ~ site.tagline) -%}
+{%- set pageDescription = description or (content | excerpt(155) if content else site.description) or site.description -%}
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ pageTitle }}</title>
+  <meta name="description" content="{{ pageDescription }}">
+  <link rel="canonical" href="{{ page.url | absoluteUrl(site.url) }}">
+  <meta property="og:type" content="{{ 'article' if section else 'website' }}">
+  <meta property="og:title" content="{{ pageTitle }}">
+  <meta property="og:description" content="{{ pageDescription }}">
+  <meta property="og:url" content="{{ page.url | absoluteUrl(site.url) }}">
+  {%- set ogImage = image or site.hero.image %}
+  {%- if ogImage %}
+  <meta property="og:image" content="{{ ogImage | absoluteUrl(site.url) }}">
+  {%- endif %}
+  <meta name="theme-color" content="#000000">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preload" href="/assets/fonts/lato-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/assets/css/site.css">
+  {%- block head %}{% endblock %}
+</head>
+<body class="{{ bodyClass or 'page' }}">
+  <a class="skip-link" href="#main">Skip to content</a>
+  {% include "partials/header.njk" %}
+  <main id="main">
+    {% block main %}{{ content | safe }}{% endblock %}
+  </main>
+  {% include "partials/footer.njk" %}
+  {%- block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,24 @@
+name = "markminors-contact"
+main = "src/index.js"
+compatibility_date = "2026-01-01"
+workers_dev = true
+
+[vars]
+ALLOWED_ORIGINS = "https://www.markminors.co.uk,https://markminors.co.uk,https://philrennie.github.io"
+SITE_URL = "https://www.markminors.co.uk"
+FROM_EMAIL = "Mark Minors website <website@markminors.co.uk>"
+
+# Secrets – set with `npx wrangler secret put NAME`, never commit them:
+#   TURNSTILE_SECRET, RESEND_API_KEY, TO_EMAIL
+
+# Max 3 submissions per IP per minute
+[[ratelimits]]
+name = "CONTACT_LIMITER"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 3
+  period = 60
+
+[observability]
+enabled = true

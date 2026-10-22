@@ -1,0 +1,14 @@
+---
+title: Message not sent
+permalink: /contact/error/
+eleventyExcludeFromCollections: true
+---
+{% extends "base.njk" %}
+{% block main %}
+<div class="wrap prose narrow">
+  <h1 class="section-heading">Hmm</h1>
+  <p>Sorry, your message couldn't be sent. The contact form needs JavaScript enabled for its spam check. You can also email me directly:</p>
+  {{ site.contact.text | safe }}
+  <p><a class="read-more" href="/#contact">Try again</a></p>
+</div>
+{% endblock %}

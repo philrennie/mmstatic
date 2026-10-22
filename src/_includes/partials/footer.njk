@@ -1,0 +1,14 @@
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p>&copy; {{ buildYear }} {{ site.title }}</p>
+    <ul class="footer-links">
+      {%- set labels = { linkedin: "LinkedIn", instagram: "Instagram", facebook: "Facebook", x: "X", youtube: "YouTube", vimeo: "Vimeo" } %}
+      {%- for key, url in site.social %}
+        {%- if url %}
+      <li><a href="{{ url }}" rel="me noopener" target="_blank">{{ labels[key] or key }}</a></li>
+        {%- endif %}
+      {%- endfor %}
+      <li><a href="/sitemap/">Sitemap</a></li>
+    </ul>
+  </div>
+</footer>
