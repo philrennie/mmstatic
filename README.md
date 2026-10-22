@@ -5,7 +5,7 @@ Static rebuild of [Mark Minors: Director & Vision Mixer](https://www.markminors.
 - **[Eleventy 3](https://www.11ty.dev/)** builds plain HTML and CSS with no front-end framework. Images are resized to WebP and JPEG at build time.
 - **[Pages CMS](https://pagescms.org/)** is the admin. It edits the Markdown and JSON files in this repo and commits to `main`.
 - **GitHub Actions** builds the site and deploys it to **GitHub Pages** on every push.
-- The **contact form** posts to a small **Cloudflare Worker** (`worker/`). The Worker checks Cloudflare **Turnstile** and sends the message with **Resend**.
+- The **contact form** posts to a small **Cloudflare Worker** (`worker/`). The Worker checks Cloudflare **Turnstile** and sends the message over SMTP through **Migadu**.
 
 ```
 src/
@@ -59,33 +59,40 @@ Notes for editors:
 - **Pin to top** (News): keeps a post first on the News page and in the homepage "Latest posts". *Kit for hire!* uses it. On the old site this was done by giving it a 2030 date.
 - New posts get their URL from the title when first created. Renaming a post later doesn't change its URL.
 
-### 3. Contact form (Cloudflare Worker + Turnstile + Resend)
+### 3. Contact form (Cloudflare Worker + Turnstile + Migadu SMTP)
 
-Everything here fits in the free tiers.
+Cloudflare's part fits in the free tier. Email goes out through the existing Migadu account.
 
 **a. Turnstile** (Cloudflare dashboard → Turnstile → Add widget)
 - Hostnames: `www.markminors.co.uk`, `markminors.co.uk`, `philrennie.github.io`
 - Widget mode: **Managed**
-- Copy the **site key** into `src/_data/contact.json` → `turnstileSiteKey`. The site key is public.
+- The **site key** goes in `src/_data/contact.json` → `turnstileSiteKey`. It's public and already set.
 - Keep the **secret key** for step c.
 
-**b. Resend** (<https://resend.com>)
-- Add the domain `markminors.co.uk` and add the DNS records (SPF/DKIM) it asks for. These sit alongside the existing mail setup, so nothing about Mark's inbox changes.
-- Create an API key with the **Sending access** permission only.
+**b. Migadu**
+- The Worker logs in to `smtp.migadu.com:465` (implicit TLS) as one mailbox. Cloudflare Workers can't use port 25; ports 465 and 587 both work.
+- The address the message is sent from (`FROM_EMAIL` in `worker/wrangler.toml`, currently `website@markminors.co.uk`) must be either that mailbox or an *identity* of it in Migadu. Otherwise Migadu rejects it.
+- The visitor's address only ever goes in `Reply-To`, never `From`, so SPF, DKIM and DMARC still pass.
 
-**c. Deploy the Worker**
-```sh
-cd worker
-npm install
-npx wrangler login
-npx wrangler secret put TURNSTILE_SECRET   # from step a
-npx wrangler secret put RESEND_API_KEY     # from step b
-npx wrangler secret put TO_EMAIL           # mark@markminors.co.uk
-npm run deploy
-```
-Copy the URL it prints (e.g. `https://markminors-contact.<you>.workers.dev`) into `src/_data/contact.json` → `endpoint`, then commit.
+**c. Deploy the Worker** (dashboard, no CLI needed)
+1. Go to **Workers & Pages → Create application → GitHub**, choose `philrennie/mmstatic`, and set:
+   - Name: `markminors-contact`. This must match `worker/wrangler.toml`.
+   - Root directory: `worker`
+   - Build command: leave blank
+   - Deploy command: `npx wrangler deploy`
+2. Under **Settings → Build → Build watch paths**, set `worker/*`.
+3. Under **Settings → Variables and Secrets**, add these as type **Secret**:
+   - `TURNSTILE_SECRET`
+   - `SMTP_USER`: the Migadu mailbox address
+   - `SMTP_PASS`
+   - `TO_EMAIL`
+4. Copy the Worker URL (`https://markminors-contact.<you>.workers.dev`) into `src/_data/contact.json` → `endpoint` and commit.
 
-Optionally, route the Worker on a subdomain such as `forms.markminors.co.uk` instead of `workers.dev`. That needs the zone on Cloudflare. Not required.
+Plain settings such as `SMTP_HOST`, `SMTP_PORT`, `FROM_EMAIL`, `FROM_NAME` and `ALLOWED_ORIGINS` live in `worker/wrangler.toml`. Change them there, not in the dashboard: every deploy overwrites dashboard values with the ones in the file.
+
+If something fails, the Worker's **Logs** tab shows the SMTP error. For example, `535` means the login failed, and `553` or `550` on the sender means `FROM_EMAIL` isn't allowed for that login.
+
+Using the CLI instead: `cd worker && npm i && npx wrangler login`, then `npx wrangler secret put <NAME>` for each secret, then `npm run deploy`.
 
 **How spam and abuse are handled** (all checks run on the server, in `worker/src/index.js`):
 
@@ -98,12 +105,12 @@ Optionally, route the Worker on a subdomain such as `forms.markminors.co.uk` ins
 | Minimum fill time of 3 s | Scripted instant submits. These also get a fake "success" |
 | Turnstile token verified with Cloudflare, including hostname and action | Headless or automated submissions |
 | Over 5 links in the message | Link spam. Silently dropped |
-| Newlines stripped from name and subject, plain-text email only, visitor address only ever in `reply_to` | Header and HTML injection |
-| Recipient address and API keys stored as Worker secrets | Harvesting the address, or reusing the endpoint as an open relay |
+| Newlines stripped from name and subject, plain-text email only, visitor address only ever in `Reply-To` | Header and HTML injection |
+| Recipient address and SMTP credentials stored as Worker secrets | Harvesting the address, or reusing the endpoint as an open relay |
 
 The form works without JavaScript too: the Worker answers with a redirect to `/contact/thanks/` or `/contact/error/`. Turnstile needs JavaScript, though, so no-JS posts land on the error page, which shows the email address instead.
 
-Tests: `cd worker && npm test` runs 14 unit tests with `node --test`. CI runs them on every push.
+Tests: `cd worker && npm test` runs 15 unit tests. They mock out the SMTP send with `node --test`. CI runs them on every push.
 
 **Alternative if you'd rather not run a Worker:** point `contact.json → endpoint` at a hosted form service, such as [Web3Forms](https://web3forms.com) with its hCaptcha option, or Formspree. You'd need to adjust `assets/js/contact.js` to match that service's field names and response. The Worker is preferred because the recipient stays secret and the spam checks are under your control.
 

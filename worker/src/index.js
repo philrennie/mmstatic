@@ -1,6 +1,6 @@
 /**
  * markminors-contact – Cloudflare Worker that receives the website contact form
- * and emails it to Mark via Resend.
+ * and emails it to Mark over SMTP (Migadu, port 465 / implicit TLS) using worker-mailer.
  *
  * Layers of protection, cheapest first:
  *   1. Method / Origin check – only POSTs from the real site are accepted.
@@ -11,21 +11,29 @@
  *   6. Cloudflare Turnstile token, verified server-side (with hostname + action checks).
  *   7. Strict field validation; header-injection-safe; plain-text email only.
  *
- * The recipient address and API keys are Worker secrets – never in the repo or the page.
+ * The recipient address and SMTP credentials are Worker secrets – never in the repo or the page.
+ * (Workers can't use port 25; 465 and 587 are fine.)
  *
  * Env:
  *   ALLOWED_ORIGINS   comma-separated, e.g. "https://www.markminors.co.uk,https://markminors.co.uk"
  *   SITE_URL          where to send no-JS visitors back to, e.g. "https://www.markminors.co.uk"
  *   TURNSTILE_SECRET  (secret)
- *   RESEND_API_KEY    (secret)
+ *   SMTP_HOST         e.g. smtp.migadu.com
+ *   SMTP_PORT         465 (implicit TLS) or 587 (STARTTLS)
+ *   SMTP_USER         (secret) the Migadu mailbox address used to log in
+ *   SMTP_PASS         (secret) that mailbox's password
  *   TO_EMAIL          (secret) e.g. mark@markminors.co.uk
- *   FROM_EMAIL        e.g. "Mark Minors website <website@markminors.co.uk>" (domain verified in Resend)
+ *   FROM_EMAIL        address the message is sent from – must be the SMTP_USER mailbox or one of its Migadu identities
+ *   FROM_NAME         display name, e.g. "Mark Minors website"
  *   CONTACT_LIMITER   optional rate-limit binding
  */
 
 const MAX_BODY_BYTES = 32 * 1024;
 const MIN_FILL_MS = 3000;
 const MAX_FILL_MS = 24 * 60 * 60 * 1000;
+// Swappable in tests (Node can't load cloudflare:sockets).
+export const transport = { sendMail: smtpSend };
+
 const EMAIL_RE = /^[^\s@<>()",;:]+@[^\s@<>()",;:]+\.[^\s@<>()",;:]{2,}$/;
 
 export default {
@@ -111,23 +119,16 @@ export default {
       `Sent from the contact form on ${origin} at ${new Date().toISOString()}`,
     ].join("\n");
 
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${env.RESEND_API_KEY}`,
-        "Content-Type": "application/json",
-        "Idempotency-Key": `contact-${await sha256(token)}`,
-      },
-      body: JSON.stringify({
-        from: env.FROM_EMAIL,
-        to: [env.TO_EMAIL],
-        reply_to: email,
+    try {
+      await transport.sendMail(env, {
+        from: { name: env.FROM_NAME || "Website", email: env.FROM_EMAIL },
+        to: { email: env.TO_EMAIL },
+        reply: { name, email },
         subject: `Website enquiry: ${subject || name}`.slice(0, 200),
         text,
-      }),
-    });
-    if (!res.ok) {
-      console.error("Resend error", res.status, await res.text());
+      });
+    } catch (err) {
+      console.error("SMTP error", err && err.message);
       return reply(false, 502, "Sorry, the message couldn't be sent right now. Please email me directly.");
     }
     return reply(true, 200);
@@ -152,7 +153,21 @@ async function verifyTurnstile(token, ip, env, origins) {
   return true;
 }
 
-async function sha256(s) {
-  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
-  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("").slice(0, 32);
+async function smtpSend(env, message) {
+  const { WorkerMailer } = await import("worker-mailer");
+  const port = Number(env.SMTP_PORT || 465);
+  await WorkerMailer.send(
+    {
+      host: env.SMTP_HOST,
+      port,
+      secure: port === 465,
+      startTls: port !== 465,
+      credentials: { username: env.SMTP_USER, password: env.SMTP_PASS },
+      authType: ["plain", "login"],
+      name: "markminors-contact.workers.dev",
+      socketTimeoutMs: 15000,
+      responseTimeoutMs: 15000,
+    },
+    message
+  );
 }

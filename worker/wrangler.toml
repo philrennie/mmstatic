@@ -1,15 +1,19 @@
 name = "markminors-contact"
 main = "src/index.js"
 compatibility_date = "2026-01-01"
+compatibility_flags = ["nodejs_compat"]
 workers_dev = true
 
 [vars]
 ALLOWED_ORIGINS = "https://www.markminors.co.uk,https://markminors.co.uk,https://philrennie.github.io"
 SITE_URL = "https://www.markminors.co.uk"
-FROM_EMAIL = "Mark Minors website <website@markminors.co.uk>"
+SMTP_HOST = "smtp.migadu.com"
+SMTP_PORT = "465"
+FROM_EMAIL = "website@markminors.co.uk"
+FROM_NAME = "Mark Minors website"
 
 # Secrets – set with `npx wrangler secret put NAME`, never commit them:
-#   TURNSTILE_SECRET, RESEND_API_KEY, TO_EMAIL
+#   TURNSTILE_SECRET, SMTP_USER, SMTP_PASS, TO_EMAIL
 
 # Max 3 submissions per IP per minute
 [[ratelimits]]

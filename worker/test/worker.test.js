@@ -1,27 +1,33 @@
 // Unit tests for the contact Worker. Run with `npm test` (Node 20+, no wrangler needed).
 import { test, beforeEach } from "node:test";
 import assert from "node:assert/strict";
-import worker from "../src/index.js";
+import worker, { transport } from "../src/index.js";
 
 const ORIGIN = "https://www.markminors.co.uk";
 const env = {
   ALLOWED_ORIGINS: `${ORIGIN},https://markminors.co.uk`,
   SITE_URL: ORIGIN,
   TURNSTILE_SECRET: "secret",
-  RESEND_API_KEY: "re_test",
+  SMTP_HOST: "smtp.example.com",
+  SMTP_PORT: "465",
+  SMTP_USER: "site@example.com",
+  SMTP_PASS: "pw",
   TO_EMAIL: "mark@example.com",
-  FROM_EMAIL: "Site <site@example.com>",
+  FROM_EMAIL: "site@example.com",
+  FROM_NAME: "Site",
 };
 
 let calls;
+let mails;
 let turnstileResult;
 beforeEach(() => {
   calls = [];
+  mails = [];
+  transport.sendMail = async (_env, msg) => { mails.push(msg); };
   turnstileResult = { success: true, hostname: "www.markminors.co.uk", action: "contact" };
   globalThis.fetch = async (url, init) => {
     calls.push({ url: String(url), init });
     if (String(url).includes("turnstile")) return Response.json(turnstileResult);
-    if (String(url).includes("resend")) return Response.json({ id: "1" });
     throw new Error("unexpected fetch " + url);
   };
 });
@@ -44,16 +50,17 @@ function req(fields, { origin = ORIGIN, json = true, method = "POST" } = {}) {
   return new Request("https://worker.example/", { method, headers, body: method === "POST" ? body : undefined });
 }
 
-const sent = () => calls.filter((c) => c.url.includes("resend"));
+const sent = () => mails;
 
 test("valid submission sends a plain-text email with reply-to", async () => {
   const res = await worker.fetch(req(valid()), env);
   assert.equal(res.status, 200);
   assert.deepEqual(await res.json(), { ok: true });
   assert.equal(sent().length, 1);
-  const payload = JSON.parse(sent()[0].init.body);
-  assert.deepEqual(payload.to, ["mark@example.com"]);
-  assert.equal(payload.reply_to, "jane@example.com");
+  const payload = sent()[0];
+  assert.deepEqual(payload.to, { email: "mark@example.com" });
+  assert.deepEqual(payload.reply, { name: "Jane Producer", email: "jane@example.com" });
+  assert.deepEqual(payload.from, { name: "Site", email: "site@example.com" });
   assert.match(payload.text, /vision mix a gig/);
   assert.equal(payload.html, undefined);
 });
@@ -107,7 +114,7 @@ test("bad email is rejected", async () => {
 
 test("header injection in subject is flattened", async () => {
   await worker.fetch(req({ ...valid(), subject: "Hi\r\nBcc: victim@example.com" }), env);
-  const payload = JSON.parse(sent()[0].init.body);
+  const payload = sent()[0];
   assert.ok(!/[\r\n]/.test(payload.subject));
 });
 
@@ -116,6 +123,13 @@ test("link-stuffed messages silently drop", async () => {
   const res = await worker.fetch(req({ ...valid(), message: spam }), env);
   assert.equal(res.status, 200);
   assert.equal(sent().length, 0);
+});
+
+test("SMTP failure returns a friendly 502", async () => {
+  transport.sendMail = async () => { throw new Error("535 auth failed"); };
+  const res = await worker.fetch(req(valid()), env);
+  assert.equal(res.status, 502);
+  assert.match((await res.json()).error, /email me directly/);
 });
 
 test("no-JS posts get a 303 redirect", async () => {
