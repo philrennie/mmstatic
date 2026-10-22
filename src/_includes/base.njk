@@ -19,7 +19,9 @@
   <meta name="theme-color" content="#000000">
   <link rel="icon" href="/favicon.ico" sizes="any">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
-  <link rel="preload" href="/assets/fonts/lato-latin-900-normal.woff2" as="font" type="font/woff2" crossorigin>
+  {#- Neuzeit Grotesk from the existing Adobe Fonts kit; Jost (self-hosted) is the fallback #}
+  <link rel="preconnect" href="https://use.typekit.net" crossorigin>
+  <link rel="stylesheet" href="https://use.typekit.net/gip1wzi.css">
   <link rel="stylesheet" href="/assets/css/site.css">
   {%- block head %}{% endblock %}
 </head>

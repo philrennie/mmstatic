@@ -27,7 +27,7 @@ export default function (eleventyConfig) {
   eleventyConfig.addPassthroughCopy({ "src/assets": "assets" });
   eleventyConfig.addPassthroughCopy({ "src/favicon.ico": "favicon.ico", "src/apple-touch-icon.png": "apple-touch-icon.png" });
   eleventyConfig.addPassthroughCopy({
-    "node_modules/@fontsource/lato/files/lato-latin-{300,400,700,900}-normal.woff2": "assets/fonts",
+    "node_modules/@fontsource/jost/files/jost-latin-{400,700}-normal.woff2": "assets/fonts",
   });
 
   // Lets the site work under a sub-path (e.g. philrennie.github.io/mmstatic/) before the domain moves
@@ -60,6 +60,13 @@ export default function (eleventyConfig) {
   eleventyConfig.addFilter("readableDate", (d) =>
     new Date(d).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric", timeZone: "UTC" })
   );
+  // "28th November 2024", as on the old site
+  eleventyConfig.addFilter("longDate", (d) => {
+    const date = new Date(d);
+    const n = date.getUTCDate();
+    const suffix = n % 10 === 1 && n !== 11 ? "st" : n % 10 === 2 && n !== 12 ? "nd" : n % 10 === 3 && n !== 13 ? "rd" : "th";
+    return `${n}${suffix} ${date.toLocaleDateString("en-GB", { month: "long", year: "numeric", timeZone: "UTC" })}`;
+  });
   eleventyConfig.addFilter("isoDate", (d) => new Date(d).toISOString().slice(0, 10));
   eleventyConfig.addFilter("excerpt", (html = "", length = 200) => {
     let text = String(html)

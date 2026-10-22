@@ -9,7 +9,6 @@
       {%- if site.sections.reviews.showInNav and collections.reviews.length %}
       <li><a href="/reviews/" {% if section == "reviews" or page.url.startsWith("/reviews/") %}aria-current="page"{% endif %}>{{ site.sections.reviews.title }}</a></li>
       {%- endif %}
-      <li><a href="/#contact">Contact</a></li>
     </ul>
   </nav>
 </header>

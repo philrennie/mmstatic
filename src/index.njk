@@ -7,9 +7,9 @@ permalink: /
   <link rel="preconnect" href="https://challenges.cloudflare.com">
 {% endblock %}
 {% block main %}
-<section class="hero" style="--title-colour: {{ site.hero.colour or '#fff' }}">
+<section class="parallax hero" style="--title-colour: {{ site.hero.colour or '#fff' }}">
   {%- if site.hero.image %}
-  <img class="hero-image" src="{{ site.hero.image }}" alt="" sizes="100vw" loading="eager" fetchpriority="high">
+  <div class="parallax-bg"><img src="{{ site.hero.image }}" alt="" sizes="100vw" loading="eager" fetchpriority="high"></div>
   {%- endif %}
   <div class="wrap hero-inner">
     <h1 class="hero-title"><span class="visually-hidden">{{ site.title }} – </span>{{ site.hero.heading | nl2br | safe }}</h1>
@@ -28,13 +28,13 @@ permalink: /
 </section>
 {%- endif %}
 
-<section class="bio" id="bio">
+<section class="parallax bio" id="bio">
   {%- if site.bio.image %}
-  <img class="bio-image" src="{{ site.bio.image }}" alt="Mark Minors" sizes="100vw">
+  <div class="parallax-bg"><img src="{{ site.bio.image }}" alt="" sizes="100vw" loading="eager"></div>
   {%- endif %}
   <div class="wrap bio-inner">
     <div class="bio-panel prose">
-      <h2 class="section-heading">{{ site.bio.heading }}</h2>
+      <h2>{{ site.bio.heading }}</h2>
       {{ site.bio.text | safe }}
     </div>
   </div>
@@ -54,7 +54,7 @@ permalink: /
 <section class="band contact" id="contact" style="--band-bg: {{ site.contact.background }}; --band-fg: {{ site.contact.colour }}">
   <div class="wrap contact-grid">
     <div class="contact-text prose">
-      <h2 class="section-heading">{{ site.contact.heading }}</h2>
+      <h2>{{ site.contact.heading }}</h2>
       {{ site.contact.text | safe }}
     </div>
     {% include "partials/contact-form.njk" %}

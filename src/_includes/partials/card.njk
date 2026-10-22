@@ -1,18 +1,15 @@
 {#- expects `post` -#}
 <article class="card">
-  <a class="card-link" href="{{ post.url }}">
-    <div class="card-media">
-      {%- if post.data.image %}
-      <img src="{{ post.data.image }}" alt="" sizes="(min-width: 60rem) 30vw, 100vw">
-      {%- else %}
-      <div class="card-placeholder" aria-hidden="true"></div>
-      {%- endif %}
-      <div class="card-overlay" aria-hidden="true">
-        <span class="card-kind">{{ "Review" if post.data.section == "reviews" else "News" }}{% if post.data.score %} {{ post.data.score }}/5{% endif %}</span>
-        <span class="card-excerpt">{{ post.content | excerpt(90) }}</span>
-      </div>
+  <h3 class="card-title"><a href="{{ post.url }}">{{ post.data.title }}</a>{% if post.data.draft %} <span class="draft-badge">Draft</span>{% endif %}</h3>
+  <a class="card-media" href="{{ post.url }}" tabindex="-1" aria-hidden="true">
+    {%- if post.data.image %}
+    <img src="{{ post.data.image }}" alt="" sizes="(min-width: 62rem) 360px, 100vw">
+    {%- else %}
+    <div class="card-placeholder"></div>
+    {%- endif %}
+    <div class="card-overlay">
+      <span class="card-kind">{{ "Review" if post.data.section == "reviews" else "News" }}{% if post.data.score %} {{ post.data.score }}/5{% endif %}</span>
+      <span class="card-excerpt">{{ post.content | excerpt(50) }}</span>
     </div>
-    <h3 class="card-title">{{ post.data.title }}</h3>
   </a>
-  {%- if post.data.draft %}<span class="draft-badge">Draft</span>{% endif %}
 </article>

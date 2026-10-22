@@ -4,30 +4,27 @@
 {%- set list = collections[section] %}
 {%- set n = list | neighbours(page.url) %}
 <article class="post wrap">
-  <header class="post-header">
-    <p class="eyebrow"><a href="/{{ section }}/">{{ site.sections[section].title }}</a> · <time datetime="{{ page.date | isoDate }}">{{ page.date | readableDate }}</time></p>
-    <h1>{{ title }}</h1>
-    {%- if score %}<p class="score" aria-label="{{ score }} out of 5">{{ score | stars }}</p>{% endif %}
-    {%- if draft %}<p class="draft-badge">Draft – not visible on the live site</p>{% endif %}
-  </header>
-  <div class="post-body prose{% if image %} has-image image-{{ imagePosition or 'left' }}{% endif %}">
+  <h1 class="page-title">{{ title }}{% if score %} - {{ score }}/5{% endif %}</h1>
+  {%- if draft %}<p class="draft-badge">Draft – not visible on the live site</p>{% endif %}
+  <p class="meta"><time datetime="{{ page.date | isoDate }}">{{ page.date | longDate }}</time></p>
+  <div class="post-body prose{% if image %} image-{{ imagePosition or 'left' }}{% endif %}">
     {%- if image %}
-    <figure class="post-image"><img src="{{ image }}" alt="" sizes="(min-width: 60rem) 40vw, 100vw" loading="eager"></figure>
+    <figure class="post-image"><img src="{{ image }}" alt="" sizes="(min-width: 40rem) 400px, 100vw" loading="eager"></figure>
     {%- endif %}
     {{ content | safe }}
     {%- set videoUrl = video %}{% set videoTitle = title %}
     {% include "partials/video.njk" %}
   </div>
   <nav class="post-nav" aria-label="More {{ section }}">
-    <div>{% if n.older %}<a href="{{ n.older.url }}" rel="prev"><span>Older</span>{{ n.older.data.title }}</a>{% endif %}</div>
-    <div class="post-nav-index"><a href="/{{ section }}/">All {{ site.sections[section].title | lower }}</a></div>
-    <div>{% if n.newer %}<a href="{{ n.newer.url }}" rel="next"><span>Newer</span>{{ n.newer.data.title }}</a>{% endif %}</div>
+    <div>{% if n.newer %}<a href="{{ n.newer.url }}" rel="next">&laquo; {{ n.newer.data.title }}</a>{% endif %}</div>
+    <div class="post-nav-index"><a href="/{{ section }}/">Return to list</a></div>
+    <div>{% if n.older %}<a href="{{ n.older.url }}" rel="prev">{{ n.older.data.title }} &raquo;</a>{% endif %}</div>
   </nav>
 </article>
 {%- if section == "reviews" and collections.reviews.length > 1 %}
-<section class="band band-black">
+<section class="band latest">
   <div class="wrap">
-    <h2 class="section-heading">Latest reviews</h2>
+    <h2 class="section-heading">Latest Reviews</h2>
     <div class="cards">
       {%- for post in collections.reviews | without(page.url) | head(3) %}{% include "partials/card.njk" %}{% endfor %}
     </div>
